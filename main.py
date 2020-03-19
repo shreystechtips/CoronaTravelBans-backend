@@ -7,6 +7,39 @@ from geopy.exc import GeocoderTimedOut
 from bs4 import BeautifulSoup
 from selenium import webdriver
 import os 
+import time
+import pyrebase
+import base64
+from dotenv import load_dotenv
+#Firebase setup
+load_dotenv()
+def generate_google_service(fileName):
+    open(fileName, "w+").write(base64ToString(os.getenv("FIREBASE_SERVICE_CODE")))
+    return fileName
+
+
+def base64ToString(b):
+    return base64.b64decode(bytes(b, "utf-8").decode('unicode_escape')).decode('utf-8')
+
+
+def stringToBase64(s):
+    return base64.b64encode(s.encode('utf-8'))
+config = {
+    "apiKey": os.getenv("FIREBASE_KEY"),
+    "authDomain": str(os.getenv("FIREBASE_PROJ_NAME")) + ".firebaseapp.com",
+    "storageBucket": str(os.getenv("FIREBASE_PROJ_NAME")) + ".appspot.com",
+    "databaseURL": "https://" + str(os.getenv("FIREBASE_PROJ_NAME")) + ".firebaseio.com",
+    "serviceAccount": generate_google_service("service.json")
+}
+firebase = pyrebase.initialize_app(config)
+storage = firebase.storage()
+
+try:
+    # INIT FIREBASE
+    os.remove("service.json")
+except:
+    None
+
 iso = json.loads(open('./data/iso3.json','r').read())
 names = json.loads(open('./data/names.json','r').read())
 def country_iso3_from_name(name, exact = False):
@@ -21,7 +54,6 @@ def iso2_to_iso3(iso2):
         return iso[iso2]
     else:
         return ''
-# print(country_iso3_from_name("United States", exact = True))
 
 def update_countries(countries, iterator):
     lastCountry = ""
@@ -43,7 +75,6 @@ def update_countries(countries, iterator):
 
 sites = {'usatoday':"https://www.usatoday.com/story/travel/news/2020/03/17/coronavirus-travel-bans-countries-impose-travel-restrictions/5058513002/",
         'cnn': 'https://www.cnn.com/travel/article/coronavirus-travel-bans/index.html'}
-usatoday = 'p',{'class':'gnt_ar_b_p'}
 parse = {'usatoday':{'type':'p','json':'gnt_ar_b_p'}
     ,
     'cnn':
@@ -57,28 +88,35 @@ def update_html(file,url):
     driver.get(url)
     soup = driver.execute_script("return document.body.outerHTML;")
     open(file,'w+').write(str(soup))
-countries = {}
-for site in sites:
-    print(site)
-    filename = os.path.join(str(site)+'.txt')
-    update_html(filename, sites[site])
-for site in parse:
-    filename = os.path.join(site+'.txt')
-    soup = open(filename, 'r').read()
-    soup = BeautifulSoup(soup, features='html.parser')
-    update_countries(countries,soup.findAll(parse[site]['type'],{'class',parse[site]['json']}))
 
 def generate_final_json(countries):
     final_json = []
     for country in countries:
         temp = {}
-
         temp["ISO3"] = country
         temp["bans"] = countries[country]
         final_json.append(temp)
     return final_json
-
-open(os.path.join('C:/Users/Shrey A/Git/CoronaTravel/frontend/src/data', 'test.json'), 'w+').write(json.dumps(generate_final_json(countries)))
+while True:
+    countries = {}
+    for site in sites:
+        print('downloading ', site)
+        filename = os.path.join(str(site)+'.txt')
+        update_html(filename, sites[site])
+    for site in parse:
+        print('parsing ', site)
+        filename = os.path.join(site+'.txt')
+        soup = open(filename, 'r').read()
+        soup = BeautifulSoup(soup, features='html.parser')
+        update_countries(countries,soup.findAll(parse[site]['type'],{'class',parse[site]['json']}))
+    FILE_NAME = 'data.json'
+    FILE_PATH = os.path.join('data', FILE_NAME)
+    print('writing')
+    open(FILE_PATH, 'w+').write(json.dumps(generate_final_json(countries)))
+    storage.child('/')
+    storage.child('parsed_data.json').put(FILE_PATH)
+    print('written')
+    time.sleep(600000)
 
 
     
