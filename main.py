@@ -11,6 +11,8 @@ import time
 import pyrebase
 import base64
 from dotenv import load_dotenv
+from apscheduler.schedulers.blocking import BlockingScheduler
+
 #Firebase setup
 load_dotenv()
 def generate_google_service(fileName):
@@ -97,7 +99,11 @@ def generate_final_json(countries):
         temp["bans"] = countries[country]
         final_json.append(temp)
     return final_json
-while True:
+
+sched = BlockingScheduler()
+
+@sched.scheduled_job('interval', minutes=3)
+def runner():
     countries = {}
     for site in sites:
         print('downloading ', site)
@@ -117,6 +123,8 @@ while True:
     storage.child('parsed_data.json').put(FILE_PATH)
     print('written')
     time.sleep(600000)
+
+sched.start()
 
 
     
