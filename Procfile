@@ -1,2 +1,2 @@
-clock: python main.py
+clock: python clock.py
 web: python main.py

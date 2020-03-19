@@ -11,7 +11,6 @@ import time
 import pyrebase
 import base64
 from dotenv import load_dotenv
-from apscheduler.schedulers.blocking import BlockingScheduler
 from flask import Flask
 
 app = Flask(__name__)
@@ -102,9 +101,6 @@ def generate_final_json(countries):
         final_json.append(temp)
     return final_json
 
-sched = BlockingScheduler()
-
-@sched.scheduled_job('interval', minutes=3)
 def runner():
     countries = {}
     for site in sites:
@@ -125,8 +121,6 @@ def runner():
     storage.child('parsed_data.json').put(FILE_PATH)
     print('written')
     time.sleep(600000)
-
-sched.start()
 
 app.run()
 
