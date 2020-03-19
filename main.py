@@ -11,9 +11,9 @@ import time
 import pyrebase
 import base64
 from dotenv import load_dotenv
-from flask import Flask
+# from flask import Flask
 
-app = Flask(__name__)
+# app = Flask(__name__)
 #Firebase setup
 load_dotenv()
 def generate_google_service(fileName):
@@ -104,11 +104,11 @@ def generate_final_json(countries):
 def runner():
     countries = {}
     for site in sites:
-        print('downloading ', site)
+        print('downloading', site)
         filename = os.path.join(str(site)+'.txt')
         update_html(filename, sites[site])
     for site in parse:
-        print('parsing ', site)
+        print('parsing', site)
         filename = os.path.join(site+'.txt')
         soup = open(filename, 'r').read()
         soup = BeautifulSoup(soup, features='html.parser')
@@ -122,7 +122,7 @@ def runner():
     print('written')
     time.sleep(600000)
 
-app.run()
+# app.run()
 
 
     
