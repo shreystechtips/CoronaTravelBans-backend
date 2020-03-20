@@ -119,7 +119,6 @@ def runner():
     storage.child('/')
     storage.child('parsed_data.json').put(FILE_PATH)
     print('written')
-    time.sleep(600000)
 
 # app.run()
 
