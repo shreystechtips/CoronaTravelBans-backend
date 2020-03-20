@@ -1,11 +1,14 @@
 # from apscheduler.schedulers.blocking import BlockingScheduler
 import main
-import time
+from time import sleep
+from os import getenv
+from dotenv import load_dotenv
+load_dotenv()
 # sched = BlockingScheduler()
 
 # @sched.scheduled_job('interval', seconds = 30)
 while True:
     main.runner()
-    time.sleep(30000)
+    sleep(int(getenv('REFRESH_SEC')))
 
 # sched.start()
