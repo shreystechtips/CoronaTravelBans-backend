@@ -4,7 +4,7 @@ import time
 # sched = BlockingScheduler()
 
 # @sched.scheduled_job('interval', seconds = 30)
-def run():
+while True:
     main.runner()
     time.sleep(30000)
 
