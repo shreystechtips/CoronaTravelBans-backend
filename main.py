@@ -85,9 +85,8 @@ parse = {'usatoday':{'type':'p','json':'gnt_ar_b_p'}
             'json':'Paragraph__component'}
     }
 
-
-def update_html(file,url):
-    driver = webdriver.PhantomJS() 
+driver = webdriver.PhantomJS(executable_path='bin/phantomjs')
+def update_html(file,url): 
     driver.get(url)
     soup = driver.execute_script("return document.body.outerHTML;")
     open(file,'w+').write(str(soup))
