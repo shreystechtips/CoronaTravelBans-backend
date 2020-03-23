@@ -9,6 +9,7 @@ sched = BlockingScheduler()
 
 @sched.scheduled_job('interval', seconds = int(getenv('REFRESH_SEC')))
 def run():
+    print(getenv('REFRESH_SEC'))
     main.runner()
     # sleep(int(getenv('REFRESH_SEC')))
 
