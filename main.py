@@ -6,8 +6,7 @@ from geopy.geocoders import Nominatim
 from geopy.exc import GeocoderTimedOut
 from bs4 import BeautifulSoup
 from selenium import webdriver
-import os 
-import time
+import os
 import pyrebase
 import base64
 from dotenv import load_dotenv
@@ -78,11 +77,15 @@ def update_countries(countries, iterator):
 
 sites = {'usatoday':"https://www.usatoday.com/story/travel/news/2020/03/17/coronavirus-travel-bans-countries-impose-travel-restrictions/5058513002/",
         'cnn': 'https://www.cnn.com/travel/article/coronavirus-travel-bans/index.html'}
-parse = {'usatoday':{'type':'p','json':'gnt_ar_b_p'}
-    ,
-    'cnn':
-            {'type':'div',
-            'json':'Paragraph__component'}
+parse = {
+            'usatoday':{
+                            'type':'p',
+                            'json':'gnt_ar_b_p'
+            },
+            'cnn':{
+                'type':'div',
+                'json':'Paragraph__component'
+            }
     }
 
 driver = webdriver.PhantomJS(executable_path=os.path.join(os.getcwd(),'bin/phantomjs'))
@@ -119,8 +122,7 @@ def runner():
     storage.child('/')
     storage.child('parsed_data.json').put(FILE_PATH)
     print('written')
+    requests.get(os.getenv("ZAPIER_UPDATE_HOOK"))
 
-# app.run()
 
-
-    
+# app.run() 
