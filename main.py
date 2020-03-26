@@ -115,14 +115,25 @@ def runner():
         soup = open(filename, 'r').read()
         soup = BeautifulSoup(soup, features='html.parser')
         update_countries(countries,soup.findAll(parse[site]['type'],{'class',parse[site]['json']}))
+    
     FILE_NAME = 'data.json'
+    FILE_NAME_COMPARE = 'compare.json'
     FILE_PATH = os.path.join('data', FILE_NAME)
-    print('writing')
+    FILE_PATH_COMPARE =  os.path.join('data', FILE_NAME_COMPARE)
     open(FILE_PATH, 'w+').write(json.dumps(generate_final_json(countries)))
-    storage.child('/')
-    storage.child('parsed_data.json').put(FILE_PATH)
-    print('written')
-    requests.get(os.getenv("ZAPIER_UPDATE_HOOK"))
+    storage.child("parsed_data.json").download(FILE_PATH_COMPARE)
+    f1 = json.loads(open(FILE_PATH,'r').read()) 
+    f2 = json.loads(open(FILE_PATH_COMPARE,'r').read())
+    for thing in f1:
+        thing["bans"].sort()
+    for thing in f2:
+        thing["bans"].sort()
+    if not f1 == f2:
+        print('writing')
+        storage.child('/')  
+        storage.child('parsed_data.json').put(FILE_PATH)
+        print('written')
+        requests.get(os.getenv("ZAPIER_UPDATE_HOOK"))
 
 
 # app.run() 
