@@ -133,7 +133,7 @@ def runner():
         storage.child('/')  
         storage.child('parsed_data.json').put(FILE_PATH)
         print('written')
-        requests.get(os.getenv("ZAPIER_UPDATE_HOOK"))
+        requests.post(os.getenv("ZAPIER_UPDATE_HOOK"),data={})
 
 
 # app.run() 
