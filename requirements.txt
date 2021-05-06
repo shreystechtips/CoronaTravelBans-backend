@@ -9,7 +9,7 @@ click==7.1.1
 colorama==0.4.3
 docutils==0.15.2
 Flask==1.1.1
-Flask-Cors==3.0.8
+Flask-Cors==3.0.9
 gcloud==0.17.0
 geographiclib==1.50
 geopy==1.21.0
